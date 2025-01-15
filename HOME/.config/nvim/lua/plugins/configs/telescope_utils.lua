@@ -743,6 +743,67 @@ M.go_to_directory = function(callback)
   end
 end
 
+-- Execute shell command
+M.exec_shell_command = function()
+  return function(prompt_bufnr)
+    local input_buffer = ""
+    local cursor_position = 0
+    -- Function to handle key inputs
+    local function handle_key(key, replaced_string)
+      if key == 9 then
+        -- Handle <Tab>: `.` (not escaped) with the desired string
+        input_buffer = input_buffer:gsub("([^\\])%.", "%1" .. replaced_string)
+        vim.api.nvim_echo({ { "> ", "None" }, { input_buffer, "String" } }, false, {})
+      elseif key == 8 or key == 127 then
+        -- Handle <C-h> and DEL: remove last character
+        if #input_buffer > 0 and cursor_position > 0 then
+          input_buffer = input_buffer:sub(1, cursor_position - 1) .. input_buffer:sub(cursor_position + 1)
+          cursor_position = cursor_position - 1
+        end
+        vim.api.nvim_echo({ { "> ", "None" }, { input_buffer, "String" } }, false, {})
+      elseif key == 13 or key == 10 then
+        -- Enter pressed: finish input
+        -- Append the result to the shell command
+        local command = string.format("sh -c ' %s'", input_buffer)
+        os.execute(command)
+        return false     -- Exit input loop
+      elseif key == 68 then -- Left arrow (key code for left arrow key)
+        -- Move cursor left
+        if cursor_position > 0 then
+          cursor_position = cursor_position - 1
+        end
+      elseif key == 67 then -- Right arrow (key code for right arrow key)
+        -- Move cursor right
+        if cursor_position < #input_buffer then
+          cursor_position = cursor_position + 1
+        end
+      else
+        pcall(function()
+          -- Append normal character
+          local char = string.char(key)
+          input_buffer = input_buffer:sub(1, cursor_position) .. char .. input_buffer:sub(cursor_position + 1)
+          cursor_position = cursor_position + 1
+          vim.api.nvim_echo({ { "> ", "None" }, { input_buffer, "String" } }, false, {})
+        end)
+      end
+      return true -- Continue input loop
+    end
+
+    local filename = action_state.get_selected_entry().value
+
+    vim.api.nvim_echo({ { "> ", "None" }, { input_buffer, "String" } }, false, {})
+
+    pcall(function()
+      while true do
+        local key = vim.fn.getchar() -- Get key as a integer keycode
+        -- If `.` followed by <Tab>, expand the `.` to the current selected file name.
+        if not handle_key(key, filename) then
+          break
+        end
+      end
+    end)
+  end
+end
 -- This is partially (most) copied from Telescope's grep_string function
 -- The reason to have this function is, say scenario:
 -- I am currently in directory A, i want to grep string for another directory B.

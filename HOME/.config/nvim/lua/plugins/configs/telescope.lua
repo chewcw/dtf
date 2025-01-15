@@ -290,6 +290,7 @@ M.options = {
             end
           ),
           ["<leader>ot"] = telescope_utils.open_telescope_file_in_tab(false),
+          ["g!"] = require("plugins.configs.telescope_utils").exec_shell_command(),
         },
       },
     },
