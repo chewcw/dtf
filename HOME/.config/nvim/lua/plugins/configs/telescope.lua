@@ -291,6 +291,7 @@ M.options = {
           ),
           ["<leader>ot"] = telescope_utils.open_telescope_file_in_tab(false),
           ["g!"] = require("plugins.configs.telescope_utils").exec_shell_command(),
+          ["g."] = require("plugins.configs.telescope_utils").open_toggleterm_and_send_selection_parent_path_to_toggleterm(),
         },
       },
     },

@@ -371,7 +371,7 @@ local default_plugins = {
 
   {
     "akinsho/toggleterm.nvim",
-    cmd = { "ToggleTerm" },
+    lazy = false,
     config = true,
     init = function()
       require("core.utils").load_mappings("toggleterm")

@@ -7,7 +7,7 @@ local M = {}
 -- ----------------------------------------------------------------------------
 -- ToggleTerm on demand, can select working directory for the opened term
 -- ----------------------------------------------------------------------------
-M.toggle_term = function(target_direction)
+M.toggle_term = function(target_direction, is_open_from_file_browser, cwd)
   local count = vim.v.count or vim.g.toggle_term_count or 1
 
   local main_logic = function(vcount)
@@ -208,6 +208,12 @@ M.toggle_term = function(target_direction)
       found = true
       break
     end
+  end
+
+  if is_open_from_file_browser and cwd then
+    local dir = cwd
+    main_logic(vim.g.toggle_term_count + 1)(dir) -- +1 so that it always open in new ToggleTerm
+    return
   end
 
   -- if the current count is 0, and the record is also 0, means this is first time open the term,
