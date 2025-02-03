@@ -668,12 +668,54 @@ vim.api.nvim_create_autocmd("CmdwinEnter", {
 -- ----------------------------------------------------------------------------
 -- Run SessionSearch after VimEnter
 -- ----------------------------------------------------------------------------
+local function open_picker(files, prompt, callback)
+  local pickers = require("telescope.pickers")
+  local finders = require("telescope.finders")
+  local conf = require("telescope.config").values
+  local actions = require("telescope.actions")
+  local action_state = require("telescope.actions.state")
+
+  pickers
+      .new({}, {
+        prompt_title = prompt,
+        finder = finders.new_table({
+          results = files,
+          entry_maker = function(entry)
+            return {
+              value = entry,
+              display = entry.display_name,
+              ordinal = entry.display_name,
+            }
+          end,
+        }),
+        sorter = conf.generic_sorter({}),
+        attach_mappings = function(bufnr, map)
+          actions.select_default:replace(function()
+            actions.close(bufnr)
+            local selection = action_state.get_selected_entry()
+            callback(selection.value)
+          end)
+          return true
+        end,
+      })
+      :find()
+end
+
 vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
     if vim.fn.argc() == 0 then
-      pcall(function()
-        vim.cmd("SessionSearch")
-      end)
+      if pcall(require, "auto-session") then
+        local autosession_lib = require("auto-session.lib")
+        local autosession = require("auto-session")
+        local files = autosession_lib.get_session_list(autosession.get_root_dir())
+        open_picker(files, "Select a session", function(choice)
+          vim.defer_fn(function()
+            -- Set the global variable
+            vim.g.autosession_session_name = choice.session_name
+            autosession.autosave_and_restore(choice.session_name)
+          end, 50)
+        end)
+      end
     end
   end,
 })
@@ -697,6 +739,13 @@ vim.api.nvim_create_autocmd("VimLeavePre", {
       opt.wildmenu = true
       opt.wildmode = "full"
 
+      -- Just save to the same session name when open with session
+      if vim.g.autosession_session_name ~= nil then
+        vim.cmd("SessionSave " .. vim.g.autosession_session_name)
+        return
+      end
+
+      -- If no session were open, prompt for saving
       local user_input = vim.fn.input({
         prompt = "Saving session (Leave blank to quit without saving): ",
         completion = "customlist,v:lua.autosession_quitpre_completion_list",
