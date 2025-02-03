@@ -720,6 +720,50 @@ vim.api.nvim_create_autocmd("VimEnter", {
   end,
 })
 
+-- This command is to accomodate the vim.g.autosession_session_name global variable,
+-- if i don't use this command to restore the session (SessionRestore), the global
+-- variable wouldn't get updated, and eventually quit and overwriting the original session.
+vim.api.nvim_create_user_command("SessionRestore2", function()
+  if pcall(require, "auto-session") then
+    local autosession_lib = require("auto-session.lib")
+    local autosession = require("auto-session")
+    local files = autosession_lib.get_session_list(autosession.get_root_dir())
+    open_picker(files, "Select a session", function(choice)
+      vim.defer_fn(function()
+        -- Set the global variable
+        vim.g.autosession_session_name = choice.session_name
+        autosession.autosave_and_restore(choice.session_name)
+      end, 50)
+    end)
+  end
+end, { nargs = 0 })
+
+-- This command is to accomodate the vim.g.autosession_session_name global variable,
+-- if i don't use this command to save the session (SessionSave) to another session, the global
+-- variable wouldn't get updated, and eventually quit and overwriting the original session.
+vim.api.nvim_create_user_command("SessionSave2", function()
+  if pcall(require, "auto-session") then
+    -- Just a workaround
+    opt.wildmenu = true
+    opt.wildmode = "full"
+    vim.defer_fn(function()
+      local user_input = vim.fn.input({
+        prompt = "Save session: ",
+        completion = "customlist,v:lua.autosession_quitpre_completion_list",
+      })
+      local input = user_input:match("^%s*(.-)%s*$") or user_input
+      if input ~= "" then
+        -- Set the global variable
+        vim.g.autosession_session_name = input
+        vim.cmd("SessionSave " .. input)
+      end
+      -- Reset
+      opt.wildmenu = false
+      opt.wildmode = ""
+    end, 50)
+  end
+end, { nargs = 0 })
+
 -- ----------------------------------------------------------------------------
 -- Run SessionSave on VimLeavePre
 -- ----------------------------------------------------------------------------
