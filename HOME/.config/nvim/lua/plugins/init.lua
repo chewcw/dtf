@@ -1023,7 +1023,8 @@ local default_plugins = {
           agent = "perplexityai", -- Use perplexityai
         },
         Dict = {
-          prompt = "Explain the selected word with pronunciation, translations to Chinese and Japanese, along with explanations, example use cases, synonyms, antonyms in different contexts, all in English, Chinese, and Japanese.\n\n",
+          prompt =
+          "Explain the selected word with pronunciation, translations to Chinese and Japanese, along with explanations, example use cases, synonyms, antonyms in different contexts, all in English, Chinese, and Japanese.\n\n",
           description = "Dictionary",
           selection = function(source)
             return require("CopilotChat.select").visual(source)
@@ -1062,6 +1063,37 @@ local default_plugins = {
     cmd = { "Oil" },
     opts = {
       use_default_keymaps = false,
+      columns = {
+        "icon",
+        "permissions",
+        "size",
+        "mtime",
+      },
+      constrain_cursor = "name",
+      view_options = {
+        show_hidden = true,
+      },
+      skip_confirm_for_simple_edits = true,
+      float = {
+        -- Padding around the floating window
+        padding = 0,
+        -- max_width and max_height can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
+        max_width = 0.8,
+        max_height = 0.8,
+        border = "rounded",
+        win_options = {
+          winblend = 0,
+        },
+        -- optionally override the oil buffers window title with custom function: fun(winid: integer): string
+        get_win_title = nil,
+        -- preview_split: Split direction: "auto", "left", "right", "above", "below".
+        preview_split = "auto",
+        -- This is the config that will be passed to nvim_open_win.
+        -- Change values here to customize the layout
+        override = function(conf)
+          return conf
+        end,
+      },
       keymaps = {
         ["<A-_>"] = { "actions.select", opts = { horizontal = true } },
         ["<A-\\>"] = { "actions.select", opts = { vertical = true } },
