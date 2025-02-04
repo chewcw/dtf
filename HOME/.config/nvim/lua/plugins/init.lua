@@ -1173,9 +1173,10 @@ local default_plugins = {
           start_insert = false,
         },
       },
-      -- behaviour = {
-      -- auto_set_keymaps = true,
-      -- },
+      behaviour = {
+        auto_set_keymaps = false,
+      },
+      hints = { enabled = false },
       dual_boost = {
         enabled = false,
         first_provider = "groq",
@@ -1187,7 +1188,6 @@ local default_plugins = {
     },
     build = "make",
     dependencies = {
-      -- "stevearc/dressing.nvim",
       "MunifTanjim/nui.nvim",
     },
   },
