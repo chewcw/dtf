@@ -850,7 +850,12 @@ M.general = {
     },
     ["<leader>cct"] = {
       function()
-        vim.cmd("CopilotChatToggle")
+        pcall(function()
+          local chat = require("CopilotChat")
+          chat.toggle({
+            selection = function() end,
+          })
+        end)
       end,
       "CopilotChat - Toggle",
     },
@@ -868,8 +873,13 @@ M.general = {
     },
     ["<leader>cco"] = {
       function()
-        vim.cmd("CopilotChatClose")
-        vim.cmd("CopilotChatOpen")
+        pcall(function()
+          local chat = require("CopilotChat")
+          chat.close()
+          chat.open({
+            selection = function() end,
+          })
+        end)
       end,
       "CopilotChat - Open",
     },
@@ -954,7 +964,15 @@ M.general = {
     },
     ["<leader>cct"] = {
       function()
-        vim.cmd("CopilotChatToggle")
+        pcall(function()
+          local chat = require("CopilotChat")
+          local select = require("CopilotChat.select")
+          chat.toggle({
+            selection = function(source)
+              return select.visual(source)
+            end,
+          })
+        end)
       end,
       "CopilotChat - Toggle",
     },
@@ -980,8 +998,16 @@ M.general = {
     },
     ["<leader>cco"] = {
       function()
-        vim.cmd("CopilotChatClose")
-        vim.cmd("CopilotChatOpen")
+        local chat = require("CopilotChat")
+        local select = require("CopilotChat.select")
+        -- Somehow in visual mode, chat.open doesn't work (the selection didn't get
+        -- populated to the context), so using following as workaround
+        chat.close()
+        chat.toggle({
+          selection = function(source)
+            return select.visual(source)
+          end,
+        })
       end,
       "CopilotChat - Open",
     },

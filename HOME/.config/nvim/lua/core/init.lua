@@ -783,6 +783,9 @@ vim.api.nvim_create_autocmd("VimLeavePre", {
       opt.wildmenu = true
       opt.wildmode = "full"
 
+      -- Close CopilotChat
+      vim.cmd("CopilotChatClose")
+
       -- Just save to the same session name when open with session
       if vim.g.autosession_session_name ~= nil then
         vim.cmd("SessionSave " .. vim.g.autosession_session_name)
