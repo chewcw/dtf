@@ -999,6 +999,9 @@ local default_plugins = {
           normal = "gy",
           register = "+",
         },
+        jump_to_diff = {
+          normal = 'gJ',
+        },
       },
       show_folds = true,
       window = {
