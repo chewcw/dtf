@@ -1081,6 +1081,13 @@ M.general = {
       "move up",
       opts = { silent = true },
     },
+    ["<A-w>"] = {
+      function()
+        require("core.utils").insert_mode_movement_disable_auto_completions("C-Right")
+      end,
+      "move next word",
+      opts = { silent = true },
+    },
     ["<A-b>"] = {
       function()
         require("core.utils").insert_mode_movement_disable_auto_completions("C-Left")
