@@ -996,11 +996,34 @@ local default_plugins = {
           insert = "<C-A-y>",
         },
         yank_diff = {
-          normal = "gy",
+          normal = "gY",
           register = "+",
         },
         jump_to_diff = {
           normal = 'gJ',
+        },
+        close = {
+          normal = "gq",
+          insert = "<C-c>",
+        },
+        quickfix_answers = {
+          normal = "gQa",
+        },
+        quickfix_diffs = {
+          normal = "gQd",
+        },
+        show_info = {
+          normal = "gI",
+        },
+        show_context = {
+          normal = "gC",
+        },
+        show_diff = {
+          normal = "gD",
+        },
+        toggle_sticky = {
+          detail = 'Makes line under cursor sticky or deletes sticky line.',
+          normal = 'gR',
         },
       },
       show_folds = true,
