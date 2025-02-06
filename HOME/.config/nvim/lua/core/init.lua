@@ -820,15 +820,6 @@ vim.api.nvim_create_autocmd("WinEnter", {
 })
 
 -- ----------------------------------------------------------------------------
--- Load ext.lua file if available
--- ----------------------------------------------------------------------------
--- Load external lua file, only for customization done for each
--- neovim environment, for example my own docker container.
-local home = os.getenv("HOME")
-package.path = package.path .. ";" .. home .. "/?.lua"
-pcall(require, "ext")
-
--- ----------------------------------------------------------------------------
 -- Enable code lens
 -- ----------------------------------------------------------------------------
 vim.g.lsp_codelens_started = 1
