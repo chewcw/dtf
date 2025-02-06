@@ -898,6 +898,7 @@ M.general = {
       end,
       "CopilotChat - Save history",
     },
+    ["gQ"] = { function() end }, -- Ex mode, not useful to me
   },
 
   v = {
